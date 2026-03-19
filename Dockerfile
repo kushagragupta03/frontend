@@ -11,7 +11,4 @@ RUN npm install && npm cache clean --force
 # Copy rest of the app
 COPY . .
 
-# Expose React port
-EXPOSE 3000
-
 CMD ["npm", "start"]
