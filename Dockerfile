@@ -1,16 +1,27 @@
-FROM node:18-alpine
+# -------- Build Stage --------
+FROM node:18-alpine AS build
 
 WORKDIR /app
 
-# Copy only package files first (better caching)
 COPY package*.json ./
 
-# Install dependencies and clean cache in SAME layer
-RUN npm install && npm cache clean --force
+RUN npm install
 
-# Copy rest of the app
 COPY . .
 
-ENV HOST=0.0.0.0
+RUN npm run build
 
-CMD ["npm", "start"]
+
+# -------- Serve Stage --------
+FROM nginx:alpine
+
+# Remove default nginx static files
+RUN rm -rf /usr/share/nginx/html/*
+
+# Copy build output from previous stage
+COPY --from=build /app/build /usr/share/nginx/html
+
+# Expose port
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
