@@ -11,4 +11,6 @@ RUN npm install && npm cache clean --force
 # Copy rest of the app
 COPY . .
 
+ENV HOST=0.0.0.0
+
 CMD ["npm", "start"]
